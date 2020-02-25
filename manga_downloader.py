@@ -1,5 +1,4 @@
 import requests
-import urllib.request
 from bs4 import BeautifulSoup
 import os
 import re
@@ -11,7 +10,8 @@ url = 'https://www.mangareader.net'
 mangaLinks = {}
 chapterLinks = {}
 chapterNames = {}
-
+user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0"
+headers = {'User-Agent': user_agent}
 
 #Getting manga name.
 if len(sys.argv) >= 2:
@@ -22,7 +22,7 @@ else:
 #Searching for the manga in the "alphabetical" section of the site.
 def search(manga):
 	counter = 1
-	r = requests.get(url+'/alphabetical')
+	r = requests.get(url+'/alphabetical',headers=headers)
 	soup = BeautifulSoup(r.text,'html.parser')
 	for item in soup.find(class_="content_bloc2").find_all('li'):
 		if manga.lower() in item.get_text().lower():
@@ -38,8 +38,7 @@ def manga_choice(counter):
 		quit()
 	elif counter == 2:
 		choice = 1
-		os.system('reset')
-	else:	
+	else:
 		choice = int(input("Which one do you want to download?:"))
 		while not choice in mangaLinks:
 			choice = int(input("Which one do you want to download?:"))
@@ -49,7 +48,7 @@ def manga_choice(counter):
 
 #Going through all of the chapters and showing them/saving.
 def show_chapters(choice):
-	r = requests.get(url+mangaLinks[choice])
+	r = requests.get(url+mangaLinks[choice],headers=headers)
 	soup = BeautifulSoup(r.text,'html.parser')
 	counter = 1
 	for item in soup.find_all('table')[1].find_all('tr')[1:]:
@@ -136,16 +135,13 @@ def create_folders(choice):
 #Downloads the manga champter(s).
 def download():
 	counter = 1
-	opener = urllib.request.URLopener()
-	user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0"
-	opener.addheader('User-Agent',user_agent)
 	print("Downloading...")
 	if multiple:
 		current_dir = os.getcwd() + '/'
 		for item in toDownload:
 			os.chdir(current_dir+manga.title()+'/'+chapterNames[item])
 			while True:
-				r = requests.get(url+item+"/"+str(counter))
+				r = requests.get(url+item+"/"+str(counter),headers=headers)
 				soup = BeautifulSoup(r.text,'html.parser')
 				if soup.text == "404 Not Found":
 					print("Downloaded chapter {}.".format(re.findall('\d+',chapterNames[item])[0]))
@@ -153,22 +149,26 @@ def download():
 					break
 				else:
 					imgLink = soup.find(id="img").get('src')
-					imgName = soup.find(class_="c1").text.replace("-","").strip()
-					opener.retrieve(imgLink,imgName)
+					imgName = soup.find(class_="c2").text.replace("-","").strip()
+					r = requests.get(imgLink,headers=headers)
+					with open(imgName+".jpg",'wb') as f:
+						f.write(r.content)
 					counter += 1
 		print("Finished downloading")
 		quit()
 	else:
 		while True:
-			r = requests.get(url+"/"+str(counter))
+			r = requests.get(url+"/"+str(counter),headers=headers)
 			soup = BeautifulSoup(r.text,'html.parser')
 			if soup.text == "404 Not Found":
-				print("Chapter downloaded.")	
+				print("Chapter downloaded.")
 				quit()
 			else:
 				imgLink = soup.find(id="img").get('src')
-				imgName = soup.find(class_="c1").text.replace("-","").strip()
-				opener.retrieve(imgLink,imgName)
+				imgName = soup.find(class_="c2").text.replace("-","").strip()
+				r = requests.get(imgLink,headers=headers)
+				with open(imgName+".jpg", 'wb') as f:
+					f.write(r.content)
 				counter += 1
 
 search(manga)
