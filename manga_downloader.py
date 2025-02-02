@@ -4,8 +4,6 @@ import os
 import re
 import sys
 
-
-#Some vars.
 url = 'https://www.mangareader.net'
 mangaLinks = {}
 chapterLinks = {}
@@ -30,6 +28,7 @@ def search(manga):
 			mangaLinks[counter] = item.a.get('href')
 			counter += 1
 	manga_choice(counter)
+
 
 #Choosing which manga to download.
 def manga_choice(counter):
@@ -70,13 +69,13 @@ def chapter_choosing():
 				choice == ":"
 				multiple = True
 				toDownload = []
-				if choice.find(":") == 0:#Colon is at the start of the string.
+				if choice.find(":") == 0: #Colon is at the start of the string.
 					for item in chapterLinks:
 						if item == int(choice.split(':')[1]):
 							break
 						else:
 							toDownload.append(chapterLinks[int(item)])
-				elif ":" in choice[-1]:#Colon is at the end of the string.
+				elif ":" in choice[-1]: #Colon is at the end of the string.
 					start = int(choice.split(":")[0])
 					last = sorted(chapterLinks.keys())[-1] + 1
 					for item in chapterLinks:
@@ -84,7 +83,7 @@ def chapter_choosing():
 						start += 1
 						if start == last:
 							break
-				elif len(choice.split(":")) == 2:#Colon is at the middle of the string.
+				elif len(choice.split(":")) == 2: #Colon is at the middle of the string.
 					start = int(choice.split(":")[0])
 					end = int(choice.split(":")[1])
 					for item in chapterLinks:
@@ -112,17 +111,17 @@ def create_folders(choice):
 	if multiple:
 		counter = 1
 		for item in toDownload:
-			if os.path.isdir(manga.title()+'/'+chapterNames[item]):
+			if os.path.isdir(manga.title() + '/' + chapterNames[item]):
 				pass
 			else:
-				os.makedirs(manga.title()+'/'+chapterNames[item])
+				os.makedirs(manga.title() + '/' + chapterNames[item])
 				counter += 1
 		if counter == 1:
 			print("Folders already exist.")
 		else:
 			print("Folders created.")
 	else:
-		path = manga.title()+'/'+chapterNames[chapterLinks[int(choice)]]
+		path = manga.title() + '/' + chapterNames[chapterLinks[int(choice)]]
 		if os.path.isdir(path):
 			print("Folders already exist")
 		else:
@@ -139,34 +138,34 @@ def download():
 	if multiple:
 		current_dir = os.getcwd() + '/'
 		for item in toDownload:
-			os.chdir(current_dir+manga.title()+'/'+chapterNames[item])
+			os.chdir(current_dir + manga.title() + '/' + chapterNames[item])
 			while True:
-				r = requests.get(url+item+"/"+str(counter),headers=headers)
+				r = requests.get(url + item + "/" + str(counter), headers=headers)
 				soup = BeautifulSoup(r.text,'html.parser')
 				if soup.text == "404 Not Found":
-					print("Downloaded chapter {}.".format(re.findall('\d+',chapterNames[item])[0]))
+					print("Downloaded chapter {}.".format(re.findall('\d+', chapterNames[item])[0]))
 					counter = 1
 					break
 				else:
 					imgLink = soup.find(id="img").get('src')
-					imgName = soup.find(class_="c2").text.replace("-","").strip()
+					imgName = soup.find(class_="c2").text.replace("-", "").strip()
 					r = requests.get(imgLink,headers=headers)
-					with open(imgName+".jpg",'wb') as f:
+					with open(imgName+".jpg", 'wb') as f:
 						f.write(r.content)
 					counter += 1
 		print("Finished downloading")
 		quit()
 	else:
 		while True:
-			r = requests.get(url+"/"+str(counter),headers=headers)
-			soup = BeautifulSoup(r.text,'html.parser')
+			r = requests.get(url + "/" + str(counter), headers = headers)
+			soup = BeautifulSoup(r.text, 'html.parser')
 			if soup.text == "404 Not Found":
 				print("Chapter downloaded.")
 				quit()
 			else:
 				imgLink = soup.find(id="img").get('src')
 				imgName = soup.find(class_="c2").text.replace("-","").strip()
-				r = requests.get(imgLink,headers=headers)
+				r = requests.get(imgLink, headers = headers)
 				with open(imgName+".jpg", 'wb') as f:
 					f.write(r.content)
 				counter += 1
