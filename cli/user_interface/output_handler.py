@@ -1,5 +1,5 @@
-from Models.manga import Manga
-from Models.chapter import Chapter
+from models.manga import Manga
+from models.chapter import Chapter
 
 class OutputHandler:
     
@@ -18,6 +18,6 @@ class OutputHandler:
     #         print(f"[{index}] {chapter.title}")
             
             
-    def show_columns(self, data: list[Manga] | list[Chapter]) -> None:
-        for index, value in enumerate(data):
+    def show_columns(self, data: list[Manga] | list[Chapter], reverseIndex: bool = False) -> None:
+        for index, value in enumerate(reversed(data) if reverseIndex else data):
             print(f"[{index}] {value.title}")
