@@ -1,39 +1,28 @@
 from scraper.manga_scraper import MangaScraper
-from cli.user_interface.output_handler import OutputHandler
-from cli.user_interface.input_handler import InputHandler
+from cli.output_handler import OutputHandler
+from cli.input_handler import InputHandler
 from models.manga import Manga
 from models.chapter import Chapter
-from utils.args import get_args
+from cli.args import get_args
 from argparse import Namespace
-from utils.exceptions import NoResultsError
+from cli.validate import Validate
 
 def main():
     args: Namespace = get_args()
     input: InputHandler = InputHandler(args)
     output: OutputHandler = OutputHandler(args)
     scraper: MangaScraper = MangaScraper(args)
+    validate: Validate = Validate(args, input, output)
     
-    mangaInput: str = input.get_manga_search()
-    mangas: list[Manga] = scraper.search_manga(mangaInput)
+    manga_name: str = validate.validate_name_selection()
+    mangas: list[Manga] = scraper.search_manga(manga_name)
     
-    chapters: list[Chapter] | None = []
-    
-    try:
-        if (not args.abs and len(mangas) > 1): # Not absolute and list the mangas
-            output.show_columns(mangas)
-            mangaChoice: int = input.get_manga_to_download()
-            chapters = scraper.search_chapters(mangaChoice)
-        elif (args.abs and len(mangas) > 0): # Loop through list in order to find 1:1 manga title
-            for index, manga in enumerate(mangas):
-                if (manga.title.lower() == mangaInput.lower()):
-                    chapters = scraper.search_chapters(index)
-        else: # One manga and/or absolute
-            chapters = scraper.search_chapters()
-    except NoResultsError as error: 
-        print(error)
-
-
+    manga_selection: int = validate.validate_manga_selection(mangas)
+    chapters: list[Chapter] | None = scraper.search_chapters(manga_selection)
     output.show_columns(chapters, True)
+
+    
+    validate.validate_chapter_selection()
         
 
 if __name__ == "__main__":
