@@ -12,12 +12,12 @@ def get_args() -> argparse.Namespace:
     
     parser.add_argument("-n","--name", help="Name of the manga")
     parser.add_argument("-abs","--absolute", action="store_true", help="Will search for a 1:1 name")
+    exclusivity.add_argument("--range", metavar="<1:4|:5|4:>", help="Specify range of chapters to download")
     exclusivity.add_argument("-l","--latest", action="store_true", help="Download the latest chapter")
     exclusivity.add_argument("-a","--all", action="store_true", help="Download all chapters")
     parser.add_argument("-c","--count", action="store_true", help="Show how many chapters were downloaded")
     parser.add_argument("-v","--verbose", action="store_true", help="Show detailed information")
     parser.add_argument("-o", metavar="<output_directory>", help="Directory output")
-    exclusivity.add_argument("--range", metavar="<1:4|:5|4:>", help="Specify range of chapters to download")
     # parser.add_argument("--url", metavar="<https://mangakatana.com/...>", help="Download directly from a manga URL page")
     # parser.add_argument("--read", metavar="<input.txt>", help="Read a txt file with manga URL pages")
     
