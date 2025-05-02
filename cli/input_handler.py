@@ -1,39 +1,37 @@
+from cli.output_handler import OutputHandler
+from models.chapter import Chapter
+from models.manga import Manga
+
 class InputHandler:
     
     def __init__(self, args):
-        self.args = args
+        self.__args = args
 
-    
     def get_manga_name(self) -> str:
         manga: str = input("Which manga would you like to search? ")
 
         return manga
-    
-    
-    def get_manga_selection(self) -> int:
+
+    def get_manga_selection(self, mangas: list[Manga]) -> int:
+        OutputHandler.show_columns(mangas)
         selection: int =  int(input("Select manga: "))
-        
+
         return selection
-    
-    
-    def download_all_chapters(self) -> None:
-        download_all: str = input("Download all chapters?[y/n] ")
+
+    def download_all_chapters(self) -> bool:
+        download_all: str = input("Download all chapters?[y/n]")
         
-        self.args.all = download_all == "y"
-        # return download_all == "y"
+        return download_all == "y"
     
     
-    def download_latest_chapter(self) -> None:
-        download_latest: str = input("Download latest chapter?[y/n] ")
-        
-        self.args.latest = download_latest == "y"
-        # return download_latest == "y"
+    def download_latest_chapter(self) -> bool:
+        download_latest: str = input("Download latest chapter?[y/n]")
+
+        return download_latest == "y"
     
-    
-    def get_chapter_selection(self) -> str | None:
-        chapters: str = input("Input number of chapter(s) you want to download\n1: | :2 | 1:4 | 4 \n?> ")
+
+    def get_chapter_selection(self, chapters: list[Chapter]) -> str:
+        OutputHandler.show_columns(chapters, True)
+        chaptersInput: str = input("Input number of chapter(s) you want to download\n1: | :2 | 1:4 | 4 | (Empty for skip) \n?> ")
        
-        self.args.range = chapters if chapters != "" else None 
-        # return chapters if chapters != "" else None
-        
-        
+        return chaptersInput

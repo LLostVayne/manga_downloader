@@ -7,12 +7,12 @@ def get_args() -> argparse.Namespace:
         usage="%(prog)s [options]",
         formatter_class=argparse.RawTextHelpFormatter
     )
-    
+
     exclusivity = parser.add_mutually_exclusive_group()
-    
+
     parser.add_argument("-n","--name", help="Name of the manga")
     parser.add_argument("-abs","--absolute", action="store_true", help="Will search for a 1:1 name")
-    exclusivity.add_argument("--range", metavar="<1:4|:5|4:>", help="Specify range of chapters to download")
+    exclusivity.add_argument("-r", "--range", metavar="<1:4|:5|4:|3>", help="Specify range of chapters to download")
     exclusivity.add_argument("-l","--latest", action="store_true", help="Download the latest chapter")
     exclusivity.add_argument("-a","--all", action="store_true", help="Download all chapters")
     parser.add_argument("-c","--count", action="store_true", help="Show how many chapters were downloaded")
