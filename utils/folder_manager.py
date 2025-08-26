@@ -1,5 +1,10 @@
+import os
+
 class FolderManager:
-    
-    def create_folders(self):
-        raise NotImplementedError
-        
+
+    @staticmethod
+    def create_folders(title: str):
+        try:
+            os.mkdir(title)
+        except FileExistsError:
+            pass

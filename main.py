@@ -11,20 +11,19 @@ import sys
 
 
 def main():
-    
     try:
         args: Namespace = get_args()
-        dl_options: DownloadOptions = DownloadOptions()
         input_handler: InputHandler = InputHandler(args)
+        dl_options: DownloadOptions = DownloadOptions(args)
         scraper: MangaScraper = MangaScraper()
         validate: Validate = Validate(args, input_handler)
 
         dl_options.name = validate.validate_name_selection()
-        mangas: list[Manga] = scraper.search_manga(dl_options.name)
-        manga_selection: int = validate.validate_manga_selection(mangas)
+        mangas: list[Manga] = scraper.fetch_found_mangas(dl_options.name)
+        manga_selection: Manga = validate.validate_manga_selection(mangas, dl_options.name)
 
-        chapters: list[Chapter] = scraper.search_chapters(manga_selection, mangas)
-        validate.validate_chapter_selection(chapters, dl_options)
+        chapters: list[Chapter] = scraper.search_chapters(manga_selection)
+        dl_options.chapter_selection = validate.validate_chapter_selection(chapters, dl_options)
 
 
     except NoResultsError as e:

@@ -12,8 +12,9 @@ class InputHandler:
 
         return manga
 
-    def get_manga_selection(self, mangas: list[Manga]) -> int:
-        OutputHandler.show_columns(mangas)
+    def get_manga_selection(self, mangas: list[Manga], show_columns: bool = True) -> int:
+        if show_columns:
+            OutputHandler.show_columns(mangas)
         selection: int =  int(input("Select manga: "))
 
         return selection

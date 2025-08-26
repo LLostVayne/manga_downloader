@@ -1,10 +1,5 @@
-from dataclasses import dataclass
+from models.media_item import MediaItem
 
-@dataclass
-class Chapter:
-    title: str
-    url: str
-    
-    def __init__(self, title: str, url: str):
-        self.title = title
-        self.url = url
+
+class Chapter(MediaItem):
+    pass

@@ -13,13 +13,14 @@ class MangaScraper:
         self.__url: str = "https://mangakatana.com/?search_by=book_name&search={}"
 
 
-    def search_manga(self, title: str) -> list[Manga]:
+    def fetch_found_mangas(self, title: str) -> list[Manga]:
         """
         Searches MangaKatana for the provide manga title.
         Raises an error if no results were found.
         If the manga title is unique the site will redirect to the manga page immediately so it grabs the response.url instead of parsing for it.
 
         :param title: Name of the manga.
+        :raise NoResultsError: If no results were found.
         :return: Returns a list of manga(s)
         """
 
@@ -31,30 +32,30 @@ class MangaScraper:
             raise NoResultsError("No mangas found.")
         elif isinstance(book_list, Tag):
             for item in book_list.find_all("div", {"class" : "item"}):
-                manga_item = item.find(class_ = "title").a # type: ignore
-                mangas.append(Manga(manga_item.text, manga_item.get("href"), None)) # type: ignore
+                manga_item = item.find(class_ = "title").a
+                mangas.append(Manga(manga_item.text, manga_item.get("href")))
         else:
-            mangas.append(Manga(title, response.url, None))
+            mangas.append(Manga(title, response.url))
 
         return mangas
 
 
-    def search_chapters(self, choice: int, mangas: list[Manga]) -> list[Chapter]:
+    def search_chapters(self, chosen_manga: Manga) -> list[Chapter]:
         """
         Searches the chapter page for all the chapters.
         Raises an error if no chapters were found.
 
-        :param choice: Input for the user if the search_manga returned a list of mangas if not the manga is unique so default to 0.
-        :param mangas: List of manga(s)
+        :param chosen_manga: Chosen manga to scrape.
+        :raise NoResultsError: If no results were found.
         :return: Returns a list of chapters.
         """
-        soup = self.fetch_page(mangas[choice].url)[0]
+        soup = self.fetch_page(chosen_manga.url)[0]
         table = soup.find(class_="chapters")
         chapters: list[Chapter] = []
 
         if isinstance(table, Tag):
             for chapter in table.find_all("div", {"class": "chapter"}):
-                chapters.append(Chapter(chapter.text, chapter.a.get("href"))) # type: ignore
+                chapters.append(Chapter(chapter.text, chapter.a.get("href")))
 
             return chapters
         else:
@@ -64,6 +65,9 @@ class MangaScraper:
     def fetch_page(self, url: str) -> tuple[BeautifulSoup, Response]:
         """
         Fetches url page and returns a tuple of a Soup and Response
+
+        :param url: Url to fetch.
+        :return: Returns a BeautifulSoup and Response
         """
 
         r: Response = requests.get(url, headers=HEADERS)

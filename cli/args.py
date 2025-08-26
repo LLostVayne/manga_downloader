@@ -20,8 +20,9 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("-o", metavar="<output_directory>", help="Directory output")
     # parser.add_argument("--url", metavar="<https://mangakatana.com/...>", help="Download directly from a manga URL page")
     # parser.add_argument("--read", metavar="<input.txt>", help="Read a txt file with manga URL pages")
-    
-    bookmark = parser.add_argument_group(title="Bookmarkt Options")
+    # parser.add_argument("--progress", action="store_true", help="Show progress bar") # make mutually_exclusive_group for progress and verbose (maybe)
+
+    bookmark = parser.add_argument_group(title="Bookmark Options")
     bookmark.add_argument("-BS", metavar="<bookmark_name>", help="Save the manga you are going to download in a bookmark")
     bookmark.add_argument("-BR", metavar="<bookmark_name>", help="Retrieve and download a saved bookmark")
     bookmark.add_argument("-BD", metavar="<bookmark_name>", help="Delete a saved bookmark")
