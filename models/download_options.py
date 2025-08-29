@@ -1,21 +1,28 @@
 import argparse
+from dataclasses import dataclass
+from typing import Union
+from models.chapter_selection import ChapterSelection
 
-# class DownloadOptions:
-#     name: str
-#     chapter_selection: str = "" # range | latest | all
-#     count: bool
-#     verbose: bool
-#     output_dir: str
 
+@dataclass
 class DownloadOptions:
     name: str
-    chapter_selection: str = ""  # range | latest | all
+    absolute: bool
+    chapter_selection: Union[ChapterSelection, str]
+    chapter_range: str
+    latest: bool
+    all: bool
     count: bool
     verbose: bool
     output_dir: str
 
-    # Initialize optional arguments
+
     def __init__(self, args: argparse.Namespace):
-        self.count = args.count
-        self.verbose = args.verbose
-        # self.output_dir = args.output_dir
+        self.name = getattr(args, "name")
+        self.absolute = getattr(args, "absolute")
+        self.chapter_range = getattr(args, "range")
+        self.latest = getattr(args, "latest")
+        self.all = getattr(args, "all")
+        self.count = getattr(args, "count")
+        self.verbose = getattr(args, "verbose")
+        self.output_dir = getattr(args, "output")

@@ -20,3 +20,9 @@ scraper/__pycache__/__init__.cpython-313.pyc
 scraper/__pycache__/manga_scraper.cpython-313.pyc
 utils/__pycache__/__init__.cpython-313.pyc
 utils/__pycache__/exceptions.cpython-313.pyc
+*.pyc
+*.pyc
+*.pyc
+/models/__pycache__
+models/__pycache__/download_options.cpython-313.pyc
+utils/__pycache__/constants.cpython-313.pyc

@@ -3,3 +3,9 @@ class NoResultsError(Exception):
 
 class EmptyChapterSelection(Exception):
     pass
+
+class InvalidChapterSelection(Exception):
+    pass
+
+class InvalidChapterType(Exception):
+    pass

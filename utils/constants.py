@@ -1,2 +1,4 @@
 __USER_AGENT: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0"
 HEADERS: dict[str, str] = { "User-Agent": __USER_AGENT }
+DEFAULT_ROOT_FOLDER: str = "Documents"
+DEFAULT_MANGA_FOLDER: str = "Manga"

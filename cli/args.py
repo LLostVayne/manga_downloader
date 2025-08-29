@@ -15,18 +15,21 @@ def get_args() -> argparse.Namespace:
     exclusivity.add_argument("-r", "--range", metavar="<1:4|:5|4:|3>", help="Specify range of chapters to download")
     exclusivity.add_argument("-l","--latest", action="store_true", help="Download the latest chapter")
     exclusivity.add_argument("-a","--all", action="store_true", help="Download all chapters")
+    # exclusivity.add_argument("-s","--selection", metavar="<1,6,10,40>", help="Download chapter selection") # NEED TO BE ADDED
     parser.add_argument("-c","--count", action="store_true", help="Show how many chapters were downloaded")
     parser.add_argument("-v","--verbose", action="store_true", help="Show detailed information")
-    parser.add_argument("-o", metavar="<output_directory>", help="Directory output")
+    parser.add_argument("-o","--output", metavar="<output_directory>", help="Directory output") # VALIDATE IN INTERACTIVE
     # parser.add_argument("--url", metavar="<https://mangakatana.com/...>", help="Download directly from a manga URL page")
     # parser.add_argument("--read", metavar="<input.txt>", help="Read a txt file with manga URL pages")
     # parser.add_argument("--progress", action="store_true", help="Show progress bar") # make mutually_exclusive_group for progress and verbose (maybe)
+    # parser.add_argument("-p", "--proxy", metavar="<proxy_address>", help="Proxy address")
 
     bookmark = parser.add_argument_group(title="Bookmark Options")
-    bookmark.add_argument("-BS", metavar="<bookmark_name>", help="Save the manga you are going to download in a bookmark")
-    bookmark.add_argument("-BR", metavar="<bookmark_name>", help="Retrieve and download a saved bookmark")
-    bookmark.add_argument("-BD", metavar="<bookmark_name>", help="Delete a saved bookmark")
-    bookmark.add_argument("-BU", metavar="<bookmark_name>", help="Update a saved bookmark")
-    bookmark.add_argument("-BL", metavar="<bookmark_name>", help="List all saved bookmarks")
+    bookmark.add_argument("--bm-save", metavar="<name>", help="Save the manga you are going to download in a bookmark")
+    bookmark.add_argument("--bm-retrieve", metavar="<name>", help="Retrieve and download a saved bookmark")
+    bookmark.add_argument("--bm-delete", metavar="<name>", help="Delete a saved bookmark")
+    bookmark.add_argument("--bm-update", metavar="<name>", help="Update a saved bookmark")
+    bookmark.add_argument("--bm-list", action="store_true", help="List all saved bookmarks")
+
 
     return parser.parse_args()

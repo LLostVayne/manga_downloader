@@ -1,15 +1,16 @@
+from typing import Union
 from models.chapter import Chapter
 from models.download_options import DownloadOptions
 from utils.exceptions import EmptyChapterSelection
 from .input_handler import InputHandler
 from models.manga import Manga
-
+from models.chapter_selection import ChapterSelection
 
 class Validate:
     """The Validate class is used to validate values between the flag and interactive mode of the cli part of the application"""
     
-    def __init__(self, args, input_handler) -> None:
-        self.__args = args
+    def __init__(self, dl_options: DownloadOptions, input_handler: InputHandler) -> None:
+        self.__dl_options = dl_options
         self.__input: InputHandler = input_handler
 
     
@@ -19,7 +20,7 @@ class Validate:
         :return: User entered manga name.
         """
 
-        return self.__input.get_manga_name() if self.__args.name is None else self.__args.name
+        return self.__input.get_manga_name() if self.__dl_options.name is None else self.__dl_options.name
     
     
     def validate_manga_selection(self, mangas: list[Manga], selected_manga: str) -> Manga:
@@ -32,71 +33,56 @@ class Validate:
         :return: The chosen manga to download from.
         """
         
-        if not self.__args.absolute and len(mangas) > 1: # Not absolute and list the mangas
-            return mangas[self.__input.get_manga_selection(mangas)]
-        elif self.__args.absolute and len(mangas) > 1: # Absolute and loop through list in order to find 1:1 manga title
+        if len(mangas) == 1: # One manga and/or absolute
+            return mangas[0]
+
+        if self.__dl_options.absolute: # Absolute and loop through list in order to find 1:1 manga title
             for index, manga in enumerate(mangas):
                 if manga.title.lower() == selected_manga.lower():
                     return mangas[index]
-        else: # One manga and/or absolute
-            return mangas[0]
+        else: # Not absolute and list the mangas
+            return mangas[self.__input.get_manga_selection(mangas)]
 
-
-    def validate_all_selection(self) -> str:
-        """
-        Validate if the exclusive '-a, --all' flag is set otherwise ask the user to select all chapters.
-
-        :return: String with 'all' or ''
-        """
-        if self.__args.all:
-            return "all"
-        else:
-            return "all" if self.__input.download_all_chapters() else ""
-
-    
-    def validate_latest_selection(self) -> str:
-        """
-        Validate if the exclusive '-l, --latest' flag is set otherwise ask the user to select latest chapter.
-
-        :return: String with 'latest' or ''
-        """
-        if self.__args.latest:
-            return "latest"
-        else:
-            return "latest" if self.__input.download_latest_chapter() else ""
-
-
-    def validate_range_selection(self, chapters: list[Chapter]) -> str:
-        """
-        Validate if the exclusive '-r, --range' flag is set otherwise ask the user to select range of chapters.
-
-        :param chapters: List of chapters to select from.
-        :return: String with the range of the chapters or ''
-        """
-        return self.__input.get_chapter_selection(chapters) if self.__args.range is None else self.__args.range
-
-
-    def validate_chapter_selection(self, chapters: list[Chapter], dl_options: DownloadOptions) -> str:
+ 
+    def validate_chapter_selection(self, chapters: list[Chapter]) -> Union[ChapterSelection, str]:
         """
         Validates the exclusive chapter selection by going through the validation methods for 'all', 'latest', and 'range'.
 
-        :raise EmptyChapterSelection: If the chapter selection is empty.
-        :return: String with the chapter selection.
+        :raise EmptyChapterSelection: If the chapter selection remains empty.
+        :param chapters: List of chapters to select for range..
+        :return: Union type ChapterSelection or String with the chapter selection range.
         """
-        chapter_selection: str = ""
+        
+        if self.__dl_options.chapter_range:
+            return self.__dl_options.chapter_range
 
-        if not self.__args.latest and not self.__args.all:
-            chapter_selection = self.validate_range_selection(chapters)
+        if self.__dl_options.all:
+            return ChapterSelection.ALL
 
-        # Range is empty
-        if chapter_selection == "" and not self.__args.all:
-            chapter_selection = self.validate_latest_selection()
+        if self.__dl_options.latest:
+            return ChapterSelection.LATEST
 
-        # Range and latest is empty
-        if chapter_selection == "":
-            chapter_selection = self.validate_all_selection()
+        chapter_selection: str = self.__input.get_chapter_selection(chapters)
 
         if chapter_selection != "":
             return chapter_selection
-        else:
-            raise EmptyChapterSelection("Chapter selection cannot be empty")
+
+        if self.__input.download_latest_chapter():
+            return ChapterSelection.LATEST
+
+        if self.__input.download_all_chapters():
+            return ChapterSelection.ALL
+
+        raise EmptyChapterSelection("Chapter selection cannot be empty")
+
+
+
+
+    def validate_output_dir(self) -> Union[str, None]:
+        """
+        Validates the output directory for the downloaded mangas and its chapters.
+
+        :return:
+        """
+
+        return self.__dl_options.output_dir if self.__dl_options.output_dir is not None else self.__input.get_output_dir()

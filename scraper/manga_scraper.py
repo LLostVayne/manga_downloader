@@ -1,17 +1,15 @@
-import requests
-from requests import Response
-from bs4 import BeautifulSoup, Tag
+from bs4 import Tag
 from models.manga import Manga
 from models.chapter import Chapter
 from utils.exceptions import NoResultsError
-from utils.constants import HEADERS
+from utils.page_fetcher import fetch_page
+
 
 class MangaScraper:
     """The MangaScraper class is used to scrape data for the manga(s) and the chapter(s)."""
 
     def __init__(self):
         self.__url: str = "https://mangakatana.com/?search_by=book_name&search={}"
-
 
     def fetch_found_mangas(self, title: str) -> list[Manga]:
         """
@@ -24,18 +22,28 @@ class MangaScraper:
         :return: Returns a list of manga(s)
         """
 
-        soup, response = self.fetch_page(self.__url.format(title))
+        soup, response = fetch_page(self.__url.format(title))
         book_list = soup.find(id="book_list")
         mangas: list[Manga] = []
-        
+
         if book_list is not None and "Not found any results" in book_list.text.strip():
             raise NoResultsError("No mangas found.")
         elif isinstance(book_list, Tag):
-            for item in book_list.find_all("div", {"class" : "item"}):
-                manga_item = item.find(class_ = "title").a
-                mangas.append(Manga(manga_item.text, manga_item.get("href")))
+            for item in book_list.find_all("div", {"class": "item"}):
+                manga_item = item.find(class_="title").a
+                cover_image = item.find(class_="wrap_img").img.get("src")
+                mangas.append(Manga(
+                        title=manga_item.text,
+                        url=manga_item.get("href"),
+                        cover_image=cover_image,
+                    ))
         else:
-            mangas.append(Manga(title, response.url))
+            cover_image = soup.find(class_="cover").img.get("src")
+            mangas.append(Manga(
+                title=title,
+                url=response.url,
+                cover_image=cover_image
+            ))
 
         return mangas
 
@@ -49,7 +57,7 @@ class MangaScraper:
         :raise NoResultsError: If no results were found.
         :return: Returns a list of chapters.
         """
-        soup = self.fetch_page(chosen_manga.url)[0]
+        soup = fetch_page(chosen_manga.url)[0]
         table = soup.find(class_="chapters")
         chapters: list[Chapter] = []
 
@@ -57,21 +65,6 @@ class MangaScraper:
             for chapter in table.find_all("div", {"class": "chapter"}):
                 chapters.append(Chapter(chapter.text, chapter.a.get("href")))
 
-            return chapters
+            return list(reversed(chapters))
         else:
-            raise NoResultsError("No chapters found.") # Needs to change
-
-
-    def fetch_page(self, url: str) -> tuple[BeautifulSoup, Response]:
-        """
-        Fetches url page and returns a tuple of a Soup and Response
-
-        :param url: Url to fetch.
-        :return: Returns a BeautifulSoup and Response
-        """
-
-        r: Response = requests.get(url, headers=HEADERS)
-        r.raise_for_status()
-        soup: BeautifulSoup = BeautifulSoup(r.text, "html.parser")
-
-        return soup, r
+            raise NoResultsError("No chapters found.")  # Needs to change
