@@ -1,5 +1,4 @@
 from models.download_options import DownloadOptions
-from scraper.downloader import Downloader
 from scraper.manga_scraper import MangaScraper
 from cli.input_handler import InputHandler
 from models.manga import Manga
@@ -13,7 +12,6 @@ from utils.exceptions import (
     InvalidChapterType,
 )
 import sys
-from utils.folder_manager import FolderManager
 
 
 def main():
@@ -30,13 +28,15 @@ def main():
         selected_manga.chapters = scraper.search_chapters(selected_manga)
         dl_options.chapter_selection = validate.validate_chapter_selection(selected_manga.chapters)
         selected_manga.chapters = ChapterSelector.parse_chapters(selected_manga.chapters, dl_options.chapter_selection)
+        print(selected_manga.chapters)
         
         dl_options.output_dir = validate.validate_output_dir()
-        fm: FolderManager = FolderManager(dl_options.output_dir)
+        # fm: FolderManager = FolderManager(dl_options.output_dir)
+        # fm.create_folders(selected_manga.title)
 
-        Downloader.download_chapters(selected_manga.chapters)
-
-        
+        # FolderManager.initialize_folders(dl_options.output_dir, selected_manga.title)
+        # dw: Downloader = Downloader()
+        # dw.download_chapters(selected_manga.chapters)
 
     except NoResultsError as e:
         print(e)

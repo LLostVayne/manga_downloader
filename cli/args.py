@@ -23,6 +23,7 @@ def get_args() -> argparse.Namespace:
     # parser.add_argument("--read", metavar="<input.txt>", help="Read a txt file with manga URL pages")
     # parser.add_argument("--progress", action="store_true", help="Show progress bar") # make mutually_exclusive_group for progress and verbose (maybe)
     # parser.add_argument("-p", "--proxy", metavar="<proxy_address>", help="Proxy address")
+    # parser.add_argument("--skip", action="store_true", help="Skip interactive mode.") # MAYBE ??
 
     bookmark = parser.add_argument_group(title="Bookmark Options")
     bookmark.add_argument("--bm-save", metavar="<name>", help="Save the manga you are going to download in a bookmark")

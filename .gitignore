@@ -26,3 +26,7 @@ utils/__pycache__/exceptions.cpython-313.pyc
 /models/__pycache__
 models/__pycache__/download_options.cpython-313.pyc
 utils/__pycache__/constants.cpython-313.pyc
+utils/__pycache__/constants.cpython-313.pyc
+models/__pycache__/download_options.cpython-313.pyc
+*.pyc
+*.pyc

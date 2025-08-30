@@ -8,15 +8,15 @@ from utils.exceptions import InvalidChapterSelection
 class ChapterSelector:
 
     @staticmethod
-    def parse_chapters(chapters: list[Chapter], dl_options_selection: Union[ChapterSelection, str]) -> Union[list[Chapter], Chapter]:
+    def parse_chapters(chapters: list[Chapter], dl_options_selection: Union[ChapterSelection, str]) -> list[Chapter]:
         if dl_options_selection == ChapterSelection.ALL:
             return chapters
         elif dl_options_selection == ChapterSelection.LATEST:
-            return chapters[0]
+            return [chapters[-1]]
         elif (re.search("^\\d", dl_options_selection) or re.search("\\d$", dl_options_selection)) and dl_options_selection.count(":") == 1:
             return ChapterSelector.__parse_range(chapters, dl_options_selection)
         elif dl_options_selection.count(":") == 0 and dl_options_selection.isnumeric(): # Single chapter e.g. 5
-            return chapters[int(dl_options_selection)]
+            return [chapters[int(dl_options_selection)]]
         else:
             raise InvalidChapterSelection("Enter correct chapter selection.")
 
