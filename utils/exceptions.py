@@ -9,3 +9,6 @@ class InvalidChapterSelection(Exception):
 
 class InvalidChapterType(Exception):
     pass
+
+class DownloadError(Exception):
+    pass

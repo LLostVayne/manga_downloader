@@ -10,8 +10,11 @@ from utils.exceptions import (
     EmptyChapterSelection,
     InvalidChapterSelection,
     InvalidChapterType,
+    DownloadError,
 )
 import sys
+from scraper.downloader import Downloader
+from utils.folder_manager import FolderManager
 
 
 def main():
@@ -34,9 +37,9 @@ def main():
         # fm: FolderManager = FolderManager(dl_options.output_dir)
         # fm.create_folders(selected_manga.title)
 
-        # FolderManager.initialize_folders(dl_options.output_dir, selected_manga.title)
-        # dw: Downloader = Downloader()
-        # dw.download_chapters(selected_manga.chapters)
+        FolderManager.initialize_folders(dl_options.output_dir, selected_manga.title)
+        dw: Downloader = Downloader()
+        dw.download_chapters(selected_manga.chapters)
 
     except NoResultsError as e:
         print(e)
@@ -48,6 +51,9 @@ def main():
         print(e)
         sys.exit(1)
     except InvalidChapterType as e:
+        print(e)
+        sys.exit(1)
+    except DownloadError as e:
         print(e)
         sys.exit(1)
 

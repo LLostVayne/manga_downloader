@@ -16,3 +16,16 @@ def fetch_page(url: str) -> tuple[BeautifulSoup, Response]:
     soup: BeautifulSoup = BeautifulSoup(r.text, "html.parser")
 
     return soup, r
+
+
+def fetch_image(url: str) -> Response:
+    """
+    Fetches image page and returns a Response.
+
+    :param url: Url to fetch image.
+    :return: Returns a Response.
+    """
+    r: Response = requests.get(url, headers=HEADERS, timeout=10)
+    r.raise_for_status()
+
+    return r
