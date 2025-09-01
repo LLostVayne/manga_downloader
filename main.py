@@ -25,35 +25,29 @@ def main():
 
         dl_options.name = validate.validate_name_selection()
         mangas: list[Manga] = scraper.fetch_found_mangas(dl_options.name)
-        
+
         selected_manga: Manga = validate.validate_manga_selection(mangas, dl_options.name)
-        
+
         selected_manga.chapters = scraper.search_chapters(selected_manga)
         dl_options.chapter_selection = validate.validate_chapter_selection(selected_manga.chapters)
         selected_manga.chapters = ChapterSelector.parse_chapters(selected_manga.chapters, dl_options.chapter_selection)
-        print(selected_manga.chapters)
-        
+
         dl_options.output_dir = validate.validate_output_dir()
+        dl_options.verbose = validate.validate_verbose()
         # fm: FolderManager = FolderManager(dl_options.output_dir)
         # fm.create_folders(selected_manga.title)
 
         FolderManager.initialize_folders(dl_options.output_dir, selected_manga.title)
-        dw: Downloader = Downloader()
+        dw: Downloader = Downloader(dl_options.verbose, dl_options.count)
         dw.download_chapters(selected_manga.chapters)
 
-    except NoResultsError as e:
-        print(e)
-        sys.exit(1)
-    except EmptyChapterSelection as e:
-        print(e)
-        sys.exit(1)
-    except InvalidChapterSelection as e:
-        print(e)
-        sys.exit(1)
-    except InvalidChapterType as e:
-        print(e)
-        sys.exit(1)
-    except DownloadError as e:
+    except (
+        NoResultsError
+        or EmptyChapterSelection
+        or InvalidChapterSelection
+        or InvalidChapterType
+        or DownloadError
+    ) as e:
         print(e)
         sys.exit(1)
 

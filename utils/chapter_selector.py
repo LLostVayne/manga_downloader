@@ -17,6 +17,8 @@ class ChapterSelector:
             return ChapterSelector.__parse_range(chapters, dl_options_selection)
         elif dl_options_selection.count(":") == 0 and dl_options_selection.isnumeric(): # Single chapter e.g. 5
             return [chapters[int(dl_options_selection)]]
+        elif "," in dl_options_selection:
+            return ChapterSelector.__parse_picks(chapters, dl_options_selection)
         else:
             raise InvalidChapterSelection("Enter correct chapter selection.")
 
@@ -38,3 +40,17 @@ class ChapterSelector:
                 chapters_to_download.append(chapter)
 
         return chapters_to_download
+
+
+    @staticmethod
+    def __parse_picks(chapters: list[Chapter], dl_options_selection: Union[ChapterSelection, str]) -> list[Chapter]:
+        chapters_do_downloads: list[Chapter] = []
+        chapter_ids: list[int] = list(map(int, set(filter(None, dl_options_selection.replace(" ", "").split(",")))))
+        chapter_ids.sort()
+        
+        for chapter_id in chapter_ids:
+            if chapter_id < 0 or chapter_id > len(chapter_ids):
+                raise InvalidChapterSelection("Chapter pick numbers have to pick in range of chapters ids.")
+            chapters_do_downloads.append(chapters[chapter_id])
+                                         
+        return chapters_do_downloads

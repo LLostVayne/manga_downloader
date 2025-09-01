@@ -49,7 +49,7 @@ class Validate:
         Validates the exclusive chapter selection by going through the validation methods for 'all', 'latest', and 'range'.
 
         :raise EmptyChapterSelection: If the chapter selection remains empty.
-        :param chapters: List of chapters to select for range..
+        :param chapters: List of chapters to select for range.
         :return: Union type ChapterSelection or String with the chapter selection range.
         """
         
@@ -62,10 +62,18 @@ class Validate:
         if self.__dl_options.latest:
             return ChapterSelection.LATEST
 
-        chapter_selection: str = self.__input.get_chapter_selection(chapters)
+        if self.__dl_options.chapter_pick:
+            return self.__dl_options.chapter_pick
 
-        if chapter_selection != "":
-            return chapter_selection
+        chapter_range: str = self.__input.get_chapter_range(chapters)
+
+        if chapter_range != "":
+            return chapter_range
+
+        chapter_picks: str = self.__input.get_chapter_picks(chapters)
+
+        if chapter_picks != "":
+            return chapter_picks
 
         if self.__input.download_latest_chapter():
             return ChapterSelection.LATEST
@@ -76,13 +84,21 @@ class Validate:
         raise EmptyChapterSelection("Chapter selection cannot be empty")
 
 
-
-
     def validate_output_dir(self) -> Union[str, None]:
         """
-        Validates the output directory for the downloaded mangas and its chapters.
+        Validates the output directory for the downloaded mangas and its chapters, otherwise prompt use for input.
 
         :return:
         """
 
         return self.__dl_options.output_dir if self.__dl_options.output_dir is not None else self.__input.get_output_dir()
+
+
+    def validate_verbose(self) -> bool:
+        """
+        Validates the verbose option for showcasing more detailed information, otherwise prompt user for input.
+        
+        :return: boolean value for verbose option.
+        """
+
+        return self.__dl_options.verbose if self.__dl_options.verbose else self.__input.get_verbose()

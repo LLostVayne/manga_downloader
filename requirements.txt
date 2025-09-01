@@ -1,2 +1,4 @@
-beautifulsoup4
-requests
+beautifulsoup4~=4.13.4
+requests~=2.32.3
+bs4~=0.0.2
+selenium~=4.35.0

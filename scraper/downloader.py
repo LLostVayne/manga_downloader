@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.remote.remote_connection import LOGGER
+from cli.output_handler import OutputHandler
 from models.chapter import Chapter
 from utils.exceptions import InvalidChapterType, NoResultsError, DownloadError
 import re
@@ -17,21 +18,21 @@ from utils.page_fetcher import fetch_image
 
 
 class Downloader:
-    def __init__(self):
+    def __init__(self, verbose: bool, count: bool):
         chrome_options = Options()
-        # chrome_options.add_experimental_option("detach", True)
         chrome_options.add_argument("--log-level=3")
-        # chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         LOGGER.setLevel(logging.ERROR)
         self.__driver = webdriver.Chrome(options=chrome_options)
         self.__max_retries = 5
+        self.__output = OutputHandler(verbose, count)
 
     def download_chapters(self, chapters: list[Chapter]) -> None:
         try:
             if isinstance(chapters, list):
                 for chapter in chapters:
                     self.__driver.get(chapter.url)
-
+                    
                     WebDriverWait(self.__driver, 10).until(
                         EC.presence_of_element_located((By.ID, "imgs"))
                     )
@@ -47,11 +48,15 @@ class Downloader:
                         raise NoResultsError("Couldn't find any image pages")
 
                     FolderManager.create_folders(chapter.title.replace(":", ""))
+                    self.__output.verbose_message(f"Folders created for chapter {chapter.title}.")
 
-                    for id, page in enumerate(image_pages):
-                        self.__download_chapter(page.img.get("data-src"), id)
+                    for i, page in enumerate(image_pages):
+                        self.__output.verbose_message(f"Started download for {chapter.title} page {i}.")
+                        self.__download_chapter(page.img.get("data-src"), i)
 
                     os.chdir("..")
+                self.__output.info_message("Finished downloading all the chapters.")
+                self.__output.count_message(len(chapters))
             else:
                 raise InvalidChapterType("Chapters has to be of type list[Chapter]")
         finally:
@@ -69,11 +74,14 @@ class Downloader:
                     file.write(r.content)
 
                 if os.path.getsize(page_name) > 0:
+                    self.__output.verbose_message(f"Finished downloading {page_name}.")
                     break
                 else:
-                    print(f"Attempt {attempt} failed for downloading page: {page_name}.")
+                    self.__output.verbose_message(f"Attempt {attempt} failed for downloading page: {page_name} with {url}.")
+                    # print(f"Attempt {attempt} failed for downloading page: {page_name}.")
             else:
-                print(f"Attempt {attempt} failed for downloading page: {page_name} with HTTP code {r.status_code}.")
+                self.__output.verbose_message(f"Attempt {attempt} failed for downloading page: {page_name} with HTTP code {r.status_code}.")
+                # print(f"Attempt {attempt} failed for downloading page: {page_name} with HTTP code {r.status_code}.")
 
             if attempt < self.__max_retries:
                 time.sleep(2)

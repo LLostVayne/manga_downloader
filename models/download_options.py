@@ -10,6 +10,7 @@ class DownloadOptions:
     absolute: bool
     chapter_selection: Union[ChapterSelection, str]
     chapter_range: str
+    chapter_pick: str
     latest: bool
     all: bool
     count: bool
@@ -21,6 +22,7 @@ class DownloadOptions:
         self.name = getattr(args, "name")
         self.absolute = getattr(args, "absolute")
         self.chapter_range = getattr(args, "range")
+        self.chapter_pick = getattr(args, "pick")
         self.latest = getattr(args, "latest")
         self.all = getattr(args, "all")
         self.count = getattr(args, "count")

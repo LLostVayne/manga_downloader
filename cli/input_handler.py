@@ -2,6 +2,7 @@ from cli.output_handler import OutputHandler
 from models.chapter import Chapter
 from models.manga import Manga
 
+
 class InputHandler:
 
 
@@ -31,16 +32,28 @@ class InputHandler:
         return download_latest == "y"
 
 
-    def get_chapter_selection(self, chapters: list[Chapter]) -> str:
+    def get_chapter_range(self, chapters: list[Chapter]) -> str:
         # OutputHandler.show_columns(chapters, True)
         OutputHandler.show_columns(chapters)
-        chaptersInput: str = input("Input number of chapter(s) you want to download\n1: | :2 | 1:4 | 4 | (Empty for skip) \n?> ")
+        chapter_range: str = input("Input number range of chapter(s) you want to download\n1: | :2 | 1:4 | 4 | (Empty for skip) \n?> ")
        
-        return chaptersInput
+        return chapter_range
+
+
+    def get_chapter_picks(self, chapters: list[Chapter]) -> str:
+        # OutputHandler.show_columns(chapters)
+        chapter_picks: str = input("Input number picks of chapter(s) you want to download: (1,6,23,90 or Empty for skip) \n?>")
+
+        return chapter_picks
 
 
     def get_output_dir(self) -> str:
         output_dir: str = input("Enter output directory(Empty for default): ")
         
         return output_dir
-        
+    
+
+    def get_verbose(self) -> bool:
+        verbose_option: str = input("Show verbose output?[y/n]")
+
+        return verbose_option == "y"

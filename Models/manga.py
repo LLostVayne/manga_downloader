@@ -1,5 +1,4 @@
 from typing import Union
-
 from .chapter import Chapter
 from .media_item import MediaItem
 from dataclasses import dataclass
