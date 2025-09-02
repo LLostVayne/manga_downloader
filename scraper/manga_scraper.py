@@ -1,6 +1,6 @@
 from bs4 import Tag
-from models.manga import Manga
-from models.chapter import Chapter
+from models.media.manga import Manga
+from models.media.chapter import Chapter
 from utils.exceptions import NoResultsError
 from utils.page_fetcher import fetch_page
 

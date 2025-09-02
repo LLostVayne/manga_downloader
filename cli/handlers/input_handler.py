@@ -1,6 +1,6 @@
-from cli.output_handler import OutputHandler
-from models.chapter import Chapter
-from models.manga import Manga
+from cli.handlers.output_handler import OutputHandler
+from models.media.chapter import Chapter
+from models.media.manga import Manga
 
 
 class InputHandler:
@@ -57,3 +57,8 @@ class InputHandler:
         verbose_option: str = input("Show verbose output?[y/n]")
 
         return verbose_option == "y"
+
+    def get_progress_bar(self) -> bool:
+        progress_bar_option: str = input("Show progress bar?[y/n]")
+
+        return progress_bar_option == "y"

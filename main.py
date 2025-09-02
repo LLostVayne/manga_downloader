@@ -1,7 +1,7 @@
 from models.download_options import DownloadOptions
 from scraper.manga_scraper import MangaScraper
-from cli.input_handler import InputHandler
-from models.manga import Manga
+from cli.handlers.input_handler import InputHandler
+from models.media.manga import Manga
 from cli.args import get_args
 from cli.validate import Validate
 from utils.chapter_selector import ChapterSelector
@@ -33,12 +33,13 @@ def main():
         selected_manga.chapters = ChapterSelector.parse_chapters(selected_manga.chapters, dl_options.chapter_selection)
 
         dl_options.output_dir = validate.validate_output_dir()
-        dl_options.verbose = validate.validate_verbose()
+        # dl_options.verbose = validate.validate_verbose()
+        dl_options.information_output = validate.validate_information_output()
         # fm: FolderManager = FolderManager(dl_options.output_dir)
         # fm.create_folders(selected_manga.title)
-
+        
         FolderManager.initialize_folders(dl_options.output_dir, selected_manga.title)
-        dw: Downloader = Downloader(dl_options.verbose, dl_options.count)
+        dw: Downloader = Downloader(dl_options)
         dw.download_chapters(selected_manga.chapters)
 
     except (

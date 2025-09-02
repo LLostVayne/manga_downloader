@@ -1,7 +1,8 @@
 import argparse
 from dataclasses import dataclass
 from typing import Union
-from models.chapter_selection import ChapterSelection
+from models.enums.chapter_selection import ChapterSelection
+from models.enums.information_output import InformationOutput
 
 
 @dataclass
@@ -14,8 +15,10 @@ class DownloadOptions:
     latest: bool
     all: bool
     count: bool
-    verbose: bool
     output_dir: str
+    verbose: bool
+    progress_bar: bool
+    information_output: InformationOutput
 
 
     def __init__(self, args: argparse.Namespace):
@@ -28,3 +31,4 @@ class DownloadOptions:
         self.count = getattr(args, "count")
         self.verbose = getattr(args, "verbose")
         self.output_dir = getattr(args, "output")
+        self.progress_bar = getattr(args, "progress")

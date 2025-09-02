@@ -1,6 +1,6 @@
 from typing import Union
-from models.chapter import Chapter
-from models.chapter_selection import ChapterSelection
+from models.media.chapter import Chapter
+from models.enums.chapter_selection import ChapterSelection
 import re
 from utils.exceptions import InvalidChapterSelection
 

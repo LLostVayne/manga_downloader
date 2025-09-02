@@ -1,10 +1,11 @@
-from models.media_item import MediaItem
+from models.enums.information_output import InformationOutput
+from models.media.media_item import MediaItem
 
 
 class OutputHandler:
 
-    def __init__(self, verbose: bool, count: bool):
-        self.__verbose = verbose
+    def __init__(self, information_output: InformationOutput, count: bool):
+        self.__information_output = information_output
         self.__count = count
 
 
@@ -19,7 +20,7 @@ class OutputHandler:
 
 
     def verbose_message(self, message: str):
-        if self.__verbose:
+        if self.__information_output == InformationOutput.VERBOSE:
             print(message)
 
 

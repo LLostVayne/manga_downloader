@@ -8,29 +8,32 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.remote.remote_connection import LOGGER
-from cli.output_handler import OutputHandler
-from models.chapter import Chapter
+from cli.handlers.output_handler import OutputHandler
+from models.download_options import DownloadOptions
+from models.enums.information_output import InformationOutput
+from models.media.chapter import Chapter
 from utils.exceptions import InvalidChapterType, NoResultsError, DownloadError
 import re
 import logging
 from utils.folder_manager import FolderManager
 from utils.page_fetcher import fetch_image
-
+from tqdm import tqdm
 
 class Downloader:
-    def __init__(self, verbose: bool, count: bool):
+    def __init__(self, dl_options: DownloadOptions):
         chrome_options = Options()
         chrome_options.add_argument("--log-level=3")
         chrome_options.add_argument("--headless")
         LOGGER.setLevel(logging.ERROR)
         self.__driver = webdriver.Chrome(options=chrome_options)
         self.__max_retries = 5
-        self.__output = OutputHandler(verbose, count)
+        self.__output = OutputHandler(dl_options.information_output, dl_options.count)
+        self.__progress_bar = dl_options.information_output == InformationOutput.PROGRESS
 
     def download_chapters(self, chapters: list[Chapter]) -> None:
         try:
             if isinstance(chapters, list):
-                for chapter in chapters:
+                for chapter in tqdm(chapters) if self.__progress_bar else chapters:
                     self.__driver.get(chapter.url)
                     
                     WebDriverWait(self.__driver, 10).until(

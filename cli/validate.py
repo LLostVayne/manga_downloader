@@ -1,10 +1,12 @@
 from typing import Union
-from models.chapter import Chapter
+
+from models.enums.information_output import InformationOutput
+from models.media.chapter import Chapter
 from models.download_options import DownloadOptions
 from utils.exceptions import EmptyChapterSelection
-from .input_handler import InputHandler
-from models.manga import Manga
-from models.chapter_selection import ChapterSelection
+from cli.handlers.input_handler import InputHandler
+from models.media.manga import Manga
+from models.enums.chapter_selection import ChapterSelection
 
 class Validate:
     """The Validate class is used to validate values between the flag and interactive mode of the cli part of the application"""
@@ -102,3 +104,23 @@ class Validate:
         """
 
         return self.__dl_options.verbose if self.__dl_options.verbose else self.__input.get_verbose()
+
+
+    def validate_information_output(self) -> Union[InformationOutput, None]:
+        if self.__dl_options.verbose:
+            return InformationOutput.VERBOSE
+
+        if self.__dl_options.progress_bar:
+            return InformationOutput.PROGRESS
+
+        verbose: bool = self.__input.get_verbose()
+
+        if verbose:
+            return InformationOutput.VERBOSE
+
+        progress_bar: bool = self.__input.get_progress_bar()
+
+        if progress_bar:
+            return InformationOutput.PROGRESS
+
+        return None
