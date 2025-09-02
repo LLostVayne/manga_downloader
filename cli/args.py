@@ -5,7 +5,7 @@ def get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Download manga from 'Manga Katana' using the CLI or through the web",
         usage="%(prog)s [options]",
-        formatter_class=argparse.RawTextHelpFormatter
+        formatter_class=NoLineBreakFormatter
     )
 
     chapter_selection_exclusivity = parser.add_mutually_exclusive_group()
@@ -20,7 +20,7 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("-c","--count", action="store_true", help="Show how many chapters were downloaded")
     information_output_exclusivity.add_argument("-v","--verbose", action="store_true", help="Show detailed information")
     parser.add_argument("-o","--output", metavar="<output_directory>", help="Directory output")
-    # parser.add_argument("--url", metavar="<https://mangakatana.com/...>", help="Download directly from a manga chapter list or manga chapter URL page")
+    parser.add_argument("-u", "--url", metavar="<https://mangakatana.com/...>", help="Download directly from a manga chapter list or manga chapter URL page")
     # parser.add_argument("--read", metavar="<input.txt>", help="Read a txt file with manga URL pages")
     information_output_exclusivity.add_argument("--progress", action="store_true", help="Show progress bar") # make mutually_exclusive_group for progress and verbose (maybe)
     # parser.add_argument("--proxy", metavar="<proxy_address>", help="Proxy address")
@@ -33,3 +33,8 @@ def get_args() -> argparse.Namespace:
     bookmark.add_argument("--bm-list", action="store_true", help="List all saved bookmarks")
 
     return parser.parse_args()
+
+
+class NoLineBreakFormatter(argparse.HelpFormatter):
+    def __init__(self, prog: str):
+        super().__init__(prog, max_help_position=200, width=50)
