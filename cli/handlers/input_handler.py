@@ -40,8 +40,7 @@ class InputHandler:
         return chapter_range
 
 
-    def get_chapter_picks(self, chapters: list[Chapter]) -> str:
-        # OutputHandler.show_columns(chapters)
+    def get_chapter_picks(self) -> str:
         chapter_picks: str = input("Input number picks of chapter(s) you want to download: (1,6,23,90 or Empty for skip) \n?>")
 
         return chapter_picks
@@ -54,11 +53,11 @@ class InputHandler:
     
 
     def get_verbose(self) -> bool:
-        verbose_option: str = input("Show verbose output?[y/n]")
+        verbose_option: str = input("Show verbose output?(y/n, default: n): ")
 
         return verbose_option == "y"
 
     def get_progress_bar(self) -> bool:
-        progress_bar_option: str = input("Show progress bar?[y/n]")
+        progress_bar_option: str = input("Show progress bar?(y/n, default: n): ")
 
         return progress_bar_option == "y"

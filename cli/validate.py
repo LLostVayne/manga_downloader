@@ -72,7 +72,7 @@ class Validate:
         if chapter_range != "":
             return chapter_range
 
-        chapter_picks: str = self.__input.get_chapter_picks(chapters)
+        chapter_picks: str = self.__input.get_chapter_picks()
 
         if chapter_picks != "":
             return chapter_picks
